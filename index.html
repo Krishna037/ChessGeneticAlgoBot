@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+</head>
+<body>
+    <div id="board" style="width: 400px"></div>
+    <script>
+        var board = Chessboard('board', {
+            draggable: true,
+            dropOffBoard: 'snapback',
+            onDrop: async function (source, target) {
+                let move = source + target;
+                let response = await fetch('/move', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ move: move })
+                });
+                let result = await response.json();
+                if (!result.error) board.position(result.board_fen);
+            }
+        });
+    </script>
+</body>
+</html>
